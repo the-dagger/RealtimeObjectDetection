@@ -4,6 +4,7 @@ import ai.fritz.core.Fritz
 import ai.fritz.fritzvisionobjectmodel.FritzVisionObjectPredictor
 import ai.fritz.vision.inputs.FritzVisionImage
 import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.os.Bundle
 import android.renderscript.Allocation
 import android.renderscript.Element
@@ -20,6 +21,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var allocationIn: Allocation
     private lateinit var allocationOut: Allocation
     private lateinit var bitmapOut: Bitmap
+
+    private val itemMap by lazy {
+        hashMapOf<String, Int>()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,15 +49,24 @@ class MainActivity : AppCompatActivity() {
             fritzVisionImage = FritzVisionImage.fromBitmap(bitmapOut, it.rotation)
             val visionObjects = objectPredictor.predict(fritzVisionImage)
 
+            itemMap.clear()
+
+            visionObjects.forEach { visionObject ->
+                if (itemMap.containsKey(visionObject.visionLabel.text))
+                    itemMap[visionObject.visionLabel.text] = itemMap[visionObject.visionLabel.text]!! + 1
+                itemMap[visionObject.visionLabel.text] = 1
+            }
+
             runOnUiThread {
-                if (visionObjects.size > 0)
-                    tvDetectedItem.text = visionObjects[0].visionLabel.text
+                tvDetectedItem.text = ""
+                itemMap.forEach { map ->
+                    tvDetectedItem.append("Detected ${map.value} ${map.key}\n")
+                }
             }
         }
-
     }
 
-    private fun initializeData(){
+    private fun initializeData() {
         yuvDataLength = cameraView.previewSize?.height!! * cameraView.previewSize?.width!! * 3 / 2
         renderScript = RenderScript.create(baseContext)
         yuvToRGB = ScriptIntrinsicYuvToRGB.create(renderScript, Element.U8_4(renderScript))
