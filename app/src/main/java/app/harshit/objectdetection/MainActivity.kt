@@ -49,14 +49,17 @@ class MainActivity : AppCompatActivity() {
             fritzVisionImage = FritzVisionImage.fromBitmap(bitmapOut, it.rotation)
             val visionObjects = objectPredictor.predict(fritzVisionImage)
 
+            //Clear the existing map
             itemMap.clear()
 
+            //Convert the list of objects detected into a Map so that we can track count of similar items
             visionObjects.forEach { visionObject ->
                 if (itemMap.containsKey(visionObject.visionLabel.text))
                     itemMap[visionObject.visionLabel.text] = itemMap[visionObject.visionLabel.text]!! + 1
                 itemMap[visionObject.visionLabel.text] = 1
             }
 
+            //Print the detected items on the scree
             runOnUiThread {
                 tvDetectedItem.text = ""
                 itemMap.forEach { map ->
