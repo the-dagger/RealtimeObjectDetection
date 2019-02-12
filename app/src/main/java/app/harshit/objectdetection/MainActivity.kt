@@ -1,10 +1,11 @@
 package app.harshit.objectdetection
 
 import ai.fritz.core.Fritz
-import ai.fritz.fritzvisionobjectmodel.FritzVisionObjectPredictor
-import ai.fritz.vision.inputs.FritzVisionImage
+import ai.fritz.vision.FritzVision
+import ai.fritz.fritzvisionobjectmodel.ObjectDetectionOnDeviceModel;
+import ai.fritz.vision.predictors.FritzVisionObjectPredictor;
+import ai.fritz.vision.FritzVisionImage
 import android.graphics.Bitmap
-import android.graphics.Canvas
 import android.os.Bundle
 import android.renderscript.Allocation
 import android.renderscript.Element
@@ -31,7 +32,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         Fritz.configure(this)
 
-        val objectPredictor = FritzVisionObjectPredictor.getInstance(this)
+        val onDeviceModel = ObjectDetectionOnDeviceModel();
+        val objectPredictor = FritzVision.ObjectDetection.getPredictor(onDeviceModel);
         var fritzVisionImage: FritzVisionImage
 
         cameraView.addFrameProcessor {
@@ -47,13 +49,13 @@ class MainActivity : AppCompatActivity() {
             yuvToRGB.forEach(allocationOut)
             allocationOut.copyTo(bitmapOut)
             fritzVisionImage = FritzVisionImage.fromBitmap(bitmapOut, it.rotation)
-            val visionObjects = objectPredictor.predict(fritzVisionImage)
+            val visionResult = objectPredictor.predict(fritzVisionImage)
 
             //Clear the existing map
             itemMap.clear()
 
             //Convert the list of objects detected into a Map so that we can track count of similar items
-            visionObjects.forEach { visionObject ->
+            visionResult.visionObjects.forEach { visionObject ->
                 if (itemMap.containsKey(visionObject.visionLabel.text))
                     itemMap[visionObject.visionLabel.text] = itemMap[visionObject.visionLabel.text]!! + 1
                 itemMap[visionObject.visionLabel.text] = 1
