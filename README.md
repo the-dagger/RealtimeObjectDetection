@@ -6,3 +6,6 @@ Realtime Object detection in Android using Fritz SDK
 
 # Link to Fritz SDK 
 [http://fritz.ai](http://fritz.ai)
+
+# Youtube Video
+https://www.youtube.com/watch?v=OuF17PycRDs
