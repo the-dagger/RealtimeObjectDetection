@@ -6,3 +6,6 @@ Realtime Object detection in Android using Fritz SDK
 
 # Link to Fritz SDK 
 [http://fritz.ai](http://fritz.ai)
+
+# Blogpost
+https://heartbeat.fritz.ai/counting-items-in-real-time-on-android-with-fritz-object-detection-c450d6957448
